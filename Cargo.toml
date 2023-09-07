@@ -17,6 +17,7 @@ repository = { workspace = true }
 description = { workspace = true }
 
 [dependencies]
+lexa-prompt-macro = { path = "macro" }
 inquire = { version = "^0.6" }
 log = { version = "^0.4" }
 thiserror = { version = "^1.0" }

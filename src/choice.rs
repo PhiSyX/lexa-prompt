@@ -34,7 +34,7 @@ where
 
 	let choice = inquire::Select::new(&msg, Output::choices().to_vec())
 		.prompt()
-		.map(|choice| Output::from_str(&choice).map_err(|e| e.into()))??;
+		.map(|choice| Output::from_str(choice).map_err(|e| e.into()))??;
 
 	Ok(choice)
 }

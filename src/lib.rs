@@ -28,6 +28,7 @@ mod optional;
 mod required;
 
 pub use inquire::validator::Validation;
+pub use lexa_prompt_macro::Prompt;
 
 pub use self::choice::choice;
 pub use self::confirm::{confirm, Bool};
