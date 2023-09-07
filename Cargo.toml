@@ -1,0 +1,9 @@
+[package]
+name = "lexa-prompt"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+inquire = { version = "^0.6" }
+log = { version = "^0.4" }
+thiserror = { version = "^1.0" }
