@@ -1,3 +1,6 @@
+[workspace]
+members = [".", "macro"]
+
 [package]
 name = "lexa-prompt"
 version = "0.1.0"
