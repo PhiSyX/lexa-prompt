@@ -15,14 +15,14 @@
 // ┃  file, You can obtain one at https://mozilla.org/MPL/2.0/.                ┃
 // ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 
-use std::io;
+use crate::Result;
 
 // --------- //
 // Interface //
 // --------- //
 
 pub trait Prompt {
-	fn prompt() -> io::Result<Self>
+	fn prompt() -> Result<Self>
 	where
 		Self: Sized;
 }
