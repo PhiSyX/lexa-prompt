@@ -17,6 +17,7 @@ use crate::choices;
 // ----------- //
 
 choices! {
+	#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 	pub enum Bool {
 		False,
 		True,
@@ -42,6 +43,16 @@ impl Bool {
 	/// Vérifie que la valeur de [&Bool](Self) soit fausse.
 	pub fn is_false(&self) -> bool {
 		matches!(self, Self::False | Self::N | Self::No)
+	}
+}
+
+// -------------- //
+// Implémentation // -> Interface
+// -------------- //
+
+impl From<Bool> for bool {
+	fn from(value: Bool) -> Self {
+		value.is_true()
 	}
 }
 

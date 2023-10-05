@@ -8,6 +8,9 @@ license = "MPL-2.0"
 repository = "https://github.com/PhiSyX/lexa-prompt"
 description = "Utilitaires lié aux entrées utilisateur, IO."
 
+[features]
+serde = ["dep:serde"]
+
 [package]
 name = "lexa-prompt"
 version = { workspace = true }
@@ -20,4 +23,5 @@ description = { workspace = true }
 lexa-prompt-macro = { version = "^0.1", path = "macro" }
 inquire = { version = "^0.6" }
 log = { version = "^0.4" }
+serde = { version = "^1.0", features = ["derive"], optional = true }
 thiserror = { version = "^1.0" }
