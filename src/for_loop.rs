@@ -58,3 +58,42 @@ where
 
 	responses
 }
+
+pub fn for_loop2<Output>(
+	message: impl fmt::Display,
+	validator: fn(&str) -> Result<Validation, CustomUserError>,
+) -> Vec<Output>
+where
+	Output: crate::interface::Prompt,
+{
+	let mut responses = Vec::default();
+
+	loop {
+		let msg = format!("{message}:");
+
+		let response = match inquire::Text::new(&msg)
+			.with_validator(validator)
+			.prompt()
+			.and_then(|_| {
+				Output::prompt().map_err(|err| {
+					let custom_err =
+						<_ as Into<CustomUserError>>::into(err.to_string());
+					inquire::InquireError::Custom(custom_err)
+				})
+			}) {
+			| Ok(response) => response,
+			| Err(err) => {
+				log::error!("{err}");
+				break;
+			}
+		};
+
+		responses.push(response);
+
+		if !confirm("  Continuer") {
+			break;
+		}
+	}
+
+	responses
+}

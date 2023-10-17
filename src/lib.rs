@@ -28,6 +28,7 @@ pub use self::confirm::{confirm, Bool};
 pub use self::default::{default, default_with_validator};
 pub use self::error::Error;
 pub use self::for_loop::for_loop;
+pub use self::for_loop::for_loop2;
 pub use self::interface::{Choice, Prompt};
 pub use self::optional::{optional, optional_with_validator};
 pub use self::required::{required, required_with_validator};

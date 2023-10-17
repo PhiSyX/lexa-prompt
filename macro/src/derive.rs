@@ -130,10 +130,17 @@ impl PromptDerive {
 			meta::get_value_lit_in_meta_namevalue(&meta_list, "ask");
 		let default_value =
 			meta::get_value_in_meta_namevalue(&meta_list, "default");
+		let list_value = meta::get_value_in_meta_namevalue(&meta_list, "list");
 
 		let field_name = &f.ident;
 
-		if default_value.is_some() {
+		if let Some(ty) = list_value {
+			Ok(quote! {
+				#field_name : lexa_prompt::for_loop2::<#ty>(#ask_value, |_| {
+					Ok(lexa_prompt::Validation::Valid)
+				}),
+			})
+		} else if default_value.is_some() {
 			Ok(quote! {
 				#field_name : lexa_prompt::default(#ask_value, #default_value)?,
 			})
