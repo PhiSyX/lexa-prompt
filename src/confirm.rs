@@ -18,7 +18,8 @@ use crate::choices;
 
 choices! {
 	#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
-	pub enum Bool {
+	pub enum Bool
+	{
 		False,
 		True,
 
@@ -34,14 +35,17 @@ choices! {
 // Implémentation //
 // -------------- //
 
-impl Bool {
+impl Bool
+{
 	/// Vérifie que la valeur de [&Bool](Self) soit vraie.
-	pub fn is_true(&self) -> bool {
+	pub fn is_true(&self) -> bool
+	{
 		matches!(self, Self::True | Self::Y | Self::Yes)
 	}
 
 	/// Vérifie que la valeur de [&Bool](Self) soit fausse.
-	pub fn is_false(&self) -> bool {
+	pub fn is_false(&self) -> bool
+	{
 		matches!(self, Self::False | Self::N | Self::No)
 	}
 }
@@ -50,8 +54,10 @@ impl Bool {
 // Implémentation // -> Interface
 // -------------- //
 
-impl From<Bool> for bool {
-	fn from(value: Bool) -> Self {
+impl From<Bool> for bool
+{
+	fn from(value: Bool) -> Self
+	{
 		value.is_true()
 	}
 }
@@ -61,7 +67,8 @@ impl From<Bool> for bool {
 // -------- //
 
 /// Invite l'utilisateur à confirmer une question, par oui (y) ou non (n).
-pub fn confirm(question: impl fmt::Display) -> bool {
+pub fn confirm(question: impl fmt::Display) -> bool
+{
 	let ask = format!("{question} ?");
 
 	let Ok(b) = inquire::Confirm::new(&ask).prompt() else {

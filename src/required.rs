@@ -29,8 +29,7 @@ where
 	let validator = |input: &str| {
 		if input.trim().is_empty() {
 			let msg = "L'entrée NE PEUT PAS être vide.";
-			let custom_msg =
-				<_ as Into<inquire::validator::ErrorMessage>>::into(msg);
+			let custom_msg = <_ as Into<inquire::validator::ErrorMessage>>::into(msg);
 			Ok(crate::Validation::Invalid(custom_msg))
 		} else {
 			Ok(crate::Validation::Valid)

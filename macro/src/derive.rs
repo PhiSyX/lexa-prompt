@@ -19,7 +19,7 @@ use syn::spanned::Spanned;
 // Type //
 // ---- //
 
-pub type PromptDeriveParserInput = syn::ItemStruct;
+type PromptDeriveParserInput = syn::ItemStruct;
 
 type Result<'err, T> = std::result::Result<T, PromptDeriveParserError>;
 
@@ -27,12 +27,14 @@ type Result<'err, T> = std::result::Result<T, PromptDeriveParserError>;
 // Structure //
 // --------- //
 
-pub struct PromptDerive {
+pub struct PromptDerive
+{
 	item_struct: PromptDeriveParserInput,
 }
 
 #[derive(Debug)]
-pub struct PromptDeriveParserError {
+pub struct PromptDeriveParserError
+{
 	span: syn::__private::Span,
 	kind: ErrorDeriveParserErrorKind,
 }
@@ -42,61 +44,53 @@ pub struct PromptDeriveParserError {
 // ----------- //
 
 #[derive(Debug)]
-pub enum ErrorDeriveParserErrorKind {
+pub enum ErrorDeriveParserErrorKind
+{
 	IsNotNamedStruct,
 	OneOfPropertiesIsRequired,
-	PromptAttributeFormatIsInvalid { field: String },
+	PromptAttributeFormatIsInvalid
+	{
+		field: String,
+	},
 }
 
 // -------------- //
 // Implémentation //
 // -------------- //
 
-impl PromptDerive {
+impl PromptDerive
+{
 	pub const ATTRIBUTE_NAME: &'static str = "prompt";
 
-	fn parse_field<'a>(
-		&'a self,
-		f: &'a syn::Field,
-	) -> Result<'_, TokenStream2> {
-		let attribute = match field::find_attr(f, Self::ATTRIBUTE_NAME) {
-			| Some(attribute) => attribute,
-			| None => {
-				let field_name = &f.ident;
-				let field_type = &f.ty;
+	fn parse_field<'a>(&'a self, f: &'a syn::Field) -> Result<'_, TokenStream2>
+	{
+		let Some(attribute) = field::find_attr(f, Self::ATTRIBUTE_NAME) else {
+			let field_name = &f.ident;
+			let field_type = &f.ty;
 
-				return Ok(quote! {
-					#field_name : #field_type :: prompt()?,
-				});
-			}
+			return Ok(quote! {
+				#field_name : #field_type :: prompt()?,
+			});
 		};
 
-		let has_meta =
-			matches!(attribute.meta, syn::Meta::Path(_) | syn::Meta::List(_));
+		let has_meta = matches!(attribute.meta, syn::Meta::Path(_) | syn::Meta::List(_));
 		if !has_meta {
 			return Err(PromptDeriveParserError {
 				span: attribute.span(),
-				kind:
-					ErrorDeriveParserErrorKind::PromptAttributeFormatIsInvalid {
-						field: f
-							.ident
-							.as_ref()
-							.expect("identifiant du champ")
-							.to_string(),
-					},
+				kind: ErrorDeriveParserErrorKind::PromptAttributeFormatIsInvalid {
+					field: f.ident.as_ref().expect("identifiant du champ").to_string(),
+				},
 			});
 		}
 
-		let meta_list =
-			meta::get_metalist_from_attr(attribute).ok_or_else(|| {
-				PromptDeriveParserError {
-					span: attribute.span(),
-					kind: ErrorDeriveParserErrorKind::OneOfPropertiesIsRequired,
-				}
-			})?;
+		let meta_list = meta::get_metalist_from_attr(attribute).ok_or_else(|| {
+			PromptDeriveParserError {
+				span: attribute.span(),
+				kind: ErrorDeriveParserErrorKind::OneOfPropertiesIsRequired,
+			}
+		})?;
 
-		let confirm_value =
-			meta::get_value_lit_in_meta_namevalue(&meta_list, "confirm");
+		let confirm_value = meta::get_value_lit_in_meta_namevalue(&meta_list, "confirm");
 
 		if let Some(confirm_value) = confirm_value {
 			let field_name = &f.ident;
@@ -114,7 +108,7 @@ impl PromptDerive {
 					None
 				}
 			} else {
-				todo!("ok")
+				None
 			};
 
 			return Ok(quote! {
@@ -126,10 +120,8 @@ impl PromptDerive {
 			});
 		}
 
-		let ask_value =
-			meta::get_value_lit_in_meta_namevalue(&meta_list, "ask");
-		let default_value =
-			meta::get_value_in_meta_namevalue(&meta_list, "default");
+		let ask_value = meta::get_value_lit_in_meta_namevalue(&meta_list, "ask");
+		let default_value = meta::get_value_in_meta_namevalue(&meta_list, "default");
 		let list_value = meta::get_value_in_meta_namevalue(&meta_list, "list");
 
 		let field_name = &f.ident;
@@ -156,15 +148,18 @@ impl PromptDerive {
 // Implémentation // -> Interface
 // -------------- //
 
-impl Parser for PromptDerive {
+impl Parser for PromptDerive
+{
 	type Err<'err> = PromptDeriveParserError;
 	type Input = PromptDeriveParserInput;
 
-	fn new(input: Self::Input) -> Self {
+	fn new(input: Self::Input) -> Self
+	{
 		Self { item_struct: input }
 	}
 
-	fn analyze(&self) -> Result<'_, TokenStream> {
+	fn analyze(&self) -> Result<'_, TokenStream>
+	{
 		if !field::is_named_fields(&self.item_struct.fields) {
 			return Err(PromptDeriveParserError {
 				span: self.item_struct.span(),
@@ -179,21 +174,16 @@ impl Parser for PromptDerive {
 			.map(|f| self.parse_field(f))
 			.collect::<Result<_>>()?;
 
-		let title =
-			structure::find_attr(&self.item_struct, Self::ATTRIBUTE_NAME)
-				.and_then(|attribute| {
-					if let Some(list) = meta::get_metalist_from_attr(attribute)
-					{
-						let title_value = meta::get_value_lit_in_meta_namevalue(
-							&list, "title",
-						);
-						Some(quote! {
-							println!(#title_value);
-						})
-					} else {
-						None
-					}
-				});
+		let title = structure::find_attr(&self.item_struct, Self::ATTRIBUTE_NAME).and_then(|attribute| {
+			if let Some(list) = meta::get_metalist_from_attr(attribute) {
+				let title_value = meta::get_value_lit_in_meta_namevalue(&list, "title");
+				Some(quote! {
+					println!(#title_value);
+				})
+			} else {
+				None
+			}
+		});
 
 		let item_struct_name = &self.item_struct.ident;
 		let output = quote! {
@@ -212,8 +202,10 @@ impl Parser for PromptDerive {
 	}
 }
 
-impl<'err> ParserError<'err> for PromptDeriveParserError {
-	fn compile_error(self) -> TokenStream {
+impl<'err> ParserError<'err> for PromptDeriveParserError
+{
+	fn compile_error(self) -> TokenStream
+	{
 		let err_s = self.to_string();
 		let tokens = quote_spanned! {
 			self.span() => compile_error!(#err_s);
@@ -221,15 +213,18 @@ impl<'err> ParserError<'err> for PromptDeriveParserError {
 		TokenStream::from(tokens)
 	}
 
-	fn span(self) -> Span {
+	fn span(self) -> Span
+	{
 		self.span
 	}
 }
 
 impl error::Error for PromptDeriveParserError {}
 
-impl fmt::Display for PromptDeriveParserError {
-	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl fmt::Display for PromptDeriveParserError
+{
+	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+	{
 		let attr_s = format!("#[{}]", PromptDerive::ATTRIBUTE_NAME);
 
 		let err_s = match self.kind {
@@ -238,17 +233,11 @@ impl fmt::Display for PromptDeriveParserError {
 			}
 
 			| ErrorDeriveParserErrorKind::OneOfPropertiesIsRequired => {
-				format!(
-					"l'attribut {attr_s} a besoin d'une dès clés suivantes: \
-					 `ask`, `confirm`, `default`, `title`.",
-				)
+				format!("l'attribut {attr_s} a besoin d'une dès clés suivantes: `ask`, `confirm`, `default`, `title`.",)
 			}
-			| ErrorDeriveParserErrorKind::PromptAttributeFormatIsInvalid {
-				ref field,
-			} => {
+			| ErrorDeriveParserErrorKind::PromptAttributeFormatIsInvalid { ref field } => {
 				format!(
-					"le format de l'attribut {attr_s} pour le champ « {} » \
-					 est invalide.",
+					"le format de l'attribut {attr_s} pour le champ « {} » est invalide.",
 					field,
 				)
 			}

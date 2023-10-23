@@ -76,8 +76,7 @@ where
 			.prompt()
 			.and_then(|_| {
 				Output::prompt().map_err(|err| {
-					let custom_err =
-						<_ as Into<CustomUserError>>::into(err.to_string());
+					let custom_err = <_ as Into<CustomUserError>>::into(err.to_string());
 					inquire::InquireError::Custom(custom_err)
 				})
 			}) {

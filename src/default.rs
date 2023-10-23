@@ -21,10 +21,7 @@ use crate::Result;
 
 /// Invite l'utilisateur à saisir une entrée optionnelle depuis la console du
 /// terminal.
-pub fn default<Output>(
-	message: impl fmt::Display,
-	default: impl fmt::Display,
-) -> Result<Output>
+pub fn default<Output>(message: impl fmt::Display, default: impl fmt::Display) -> Result<Output>
 where
 	Output: str::FromStr,
 	Output::Err: Into<Box<dyn error::Error + Send + Sync>>,

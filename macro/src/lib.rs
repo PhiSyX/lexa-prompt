@@ -16,6 +16,7 @@ use syn::__private::TokenStream;
 // * #[prompt(title = "Start configuration for Server...")]
 // * #[prompt(ask = "your question")]
 #[proc_macro_derive(Prompt, attributes(prompt))]
-pub fn prompt_trait_derive(input: TokenStream) -> TokenStream {
+pub fn prompt_trait_derive(input: TokenStream) -> TokenStream
+{
 	lexa_syn::parse::<derive::PromptDerive>(input)
 }

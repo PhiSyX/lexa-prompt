@@ -20,7 +20,8 @@ use std::any;
 	"\n\t[{}]: erreur liée au Prompt. Raison: {0}",
 	any::type_name::<Self>()
 )]
-pub enum Error {
+pub enum Error
+{
 	Boxed(#[from] Box<dyn std::error::Error>),
 	Inquire(#[from] inquire::InquireError),
 	CustomUser(#[from] inquire::CustomUserError),

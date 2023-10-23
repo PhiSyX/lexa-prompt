@@ -14,12 +14,13 @@ use crate::Result;
 // Interface //
 // --------- //
 
-pub trait Prompt {
-	fn prompt() -> Result<Self>
-	where
-		Self: Sized;
+pub trait Prompt
+	: Sized
+{
+	fn prompt() -> Result<Self>;
 }
 
-pub trait Choice {
+pub trait Choice
+{
 	fn choices() -> &'static [&'static str];
 }

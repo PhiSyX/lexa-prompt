@@ -16,7 +16,8 @@
 macro_rules! choices {
 	(
 		$(#[$derive:meta])*
-		pub enum $enum:ident {
+		pub enum $enum:ident
+		{
 			$(
 				$(#[$attr:meta])*
 				$variant:ident,
@@ -27,34 +28,37 @@ macro_rules! choices {
 #[derive(Copy, Clone)]
 #[derive(PartialEq, Eq)]
 $(#[$derive])*
-pub enum $enum {
+pub enum $enum
+{
 	$(
 		$(#[$attr])*
 		$variant
 	),*
 }
 
-impl $crate::Choice for $enum {
-	fn choices() -> &'static [&'static str] {
+impl $crate::Choice for $enum
+{
+	fn choices() -> &'static [&'static str]
+	{
 		&[
 			$(stringify!($variant)),*
 		]
 	}
 }
 
-impl ::std::str::FromStr for $enum {
+impl ::std::str::FromStr for $enum
+{
 	type Err = String;
 
-	fn from_str(s: &str) -> Result<Self, Self::Err> {
+	fn from_str(s: &str) -> Result<Self, Self::Err>
+	{
 		$(
 			if s.to_lowercase() == stringify!($variant).to_lowercase() {
 				return Ok(Self::$variant);
 			}
 		)*
 
-		use $crate::Choice;
-
-		let choices = Self::choices().join(", ");
+		let choices = <Self as $crate::Choice>::choices().join(", ");
 
 		return Err(
 			format!(
@@ -65,8 +69,10 @@ impl ::std::str::FromStr for $enum {
 	}
 }
 
-impl std::fmt::Display for $enum {
-	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl ::std::fmt::Display for $enum
+{
+	fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result
+	{
 		let choice = match self {
 			$( | Self::$variant => stringify!($variant) ),*
 		};
